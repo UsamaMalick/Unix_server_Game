@@ -19,7 +19,14 @@ void printBoard(){
 }
 
 void admin_setup(){
+    
+    for(int i=0;i<5;i++){
+		for(int j=0;j<5;j++){
+			board_array[i][j]=0;
+		}
+	}
 
+    int pow;
     int flag = 0;
     while(flag == 0)
     {
@@ -46,10 +53,23 @@ void admin_setup(){
             printf("Column:");
             scanf("%d", &col);
 
-            if( (row >= 1 || row <= 5) && (col >= 1 || col <= 5)){
-                flag = 1;
-                board_array[row-1][col-1] = 2;
-                printBoard();
+            if( (row >= 1 || row <= 5) && (col >= 1 || col <= 5) ){
+                printf("Power:");
+                scanf("%d", &pow);
+
+                if(pow >= 1 || pow <= 5){
+                    if(board_array[row-1][col-1] == 0){
+                        flag = 1;
+                        board_array[row-1][col-1] = 2;
+                        printBoard();
+                    }
+                    else{
+                        printf("There is already a ship.");
+                    }
+                }
+                else{
+                    printf("Power Should be in range of 1-5.");
+                }   
             }
             else{
                 printf("Wrong coordinates entered. Kindly enter values in 1-5 range.\n");
