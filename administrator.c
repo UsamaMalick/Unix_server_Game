@@ -10,7 +10,7 @@
 
 
 int total_allowed_users;
-int num_of_users=3;
+int num_of_users=0;
 char **name_of_users;
 int *user_scores;
 int board_array[5][5];
@@ -18,6 +18,26 @@ int board_array[5][5];
 
 void clear_screen(){
     system("clear");
+}
+
+void updateScore(int user_index,int score){
+	user_scores[user_index]=user_scores[user_index]+score;
+}
+
+int attack(int row, int column,int user_index){
+// return 0 means "miss" | return 1 means "hit" | return 2 means "sunk"
+
+	if(board_array[row-1][column-1]!=0){
+		board_array[row-1][column-1]=board_array[row-1][column-1]-1;
+		updateScore(user_index,10);
+		if(board_array[row-1][column-1]==0){
+			return 2;
+		}
+		return 1;
+	}
+	else{
+	return 0; 
+	}
 }
 
 void printScoreBoard(){
@@ -153,8 +173,9 @@ bool isUser(char * UserIncoming){
     
 
 int main(void)
-{
- 
+{ 
+
+        initialize_Variables();
         printf("Please allow total users you would like to allow :  ");
         scanf("%d", &total_allowed_users); 
         
@@ -163,7 +184,7 @@ int main(void)
         printf(" users to enter into the game to start. \n");
         
         
-  
+ 
         int socket_desc, client_sock, client_size; 
         struct sockaddr_in server_addr, client_addr;         
 	//SERVER ADDR will have all the server address
@@ -178,6 +199,8 @@ int main(void)
         memset(client_message,'\0',sizeof(client_message));     
 	// Set all bits of the padding field//        
         //Creating Socket
+        
+        
         
         socket_desc = socket(AF_INET, SOCK_STREAM, 0);
 	
@@ -269,5 +292,8 @@ int main(void)
 	}
 	else printf("\nClient rejected : \n");
         }
+        
+        freeResources();
+        return 0;
 }
         
