@@ -10,10 +10,21 @@
 
 
 int total_allowed_users;
-int num_of_users=0;
+int num_of_users;
 char **name_of_users;
 int *user_scores;
 int board_array[5][5];
+
+
+    
+void SavingUser(char * username) {
+
+    for (int i=0; i<strlen(username); i++) {
+    	name_of_users[num_of_users][i] = username[i];   
+    }
+    num_of_users++ ;
+
+}
 
 
 void clear_screen(){
@@ -90,6 +101,8 @@ void freeResources(){
 
 void initialize_Variables(){
 
+	num_of_users = 0;
+
 	name_of_users = (char*) calloc(total_allowed_users, sizeof(char));
 
 	for ( int i = 0; i < total_allowed_users; i++ )
@@ -109,15 +122,19 @@ void initialize_Variables(){
 
 bool allow(char * username){
     
-    char allow[1];
+    char allowUser;
     
     printf("\nDo you want to allow user to enter in the game room. \n");
     printf("User name is : ");
     printf("%s\n" , username);
     printf("Please Select an option [y/n] : ");
-    gets(allow);
     
-    if (allow[0] == 'y') {
+    scanf(" %c" , &allowUser);
+    
+    
+    printf("%c" , allowUser);
+    
+    if (allowUser == 'y') {
     	printf("User allowed to enter the Game Room. \n");
     	return true;
     }
@@ -175,7 +192,7 @@ bool isUser(char * UserIncoming){
 int main(void)
 { 
 
-        initialize_Variables();
+        
         printf("Please allow total users you would like to allow :  ");
         scanf("%d", &total_allowed_users); 
         
@@ -184,7 +201,7 @@ int main(void)
         printf(" users to enter into the game to start. \n");
         
         
- 
+        initialize_Variables();
         int socket_desc, client_sock, client_size; 
         struct sockaddr_in server_addr, client_addr;         
 	//SERVER ADDR will have all the server address
@@ -288,7 +305,16 @@ int main(void)
 			username[i] = client_message[i];	
 		}
 		printf("Player Validated : \n");
-		allow(username);
+		
+		if(total_allowed_users > num_of_users) {
+			if (allow(username) == true){
+				SavingUser(username);
+				printf("Player Inserted : \n");	
+			}
+		}
+		else printf("Number of players in the room are at max.\n");
+		printf("%d" , num_of_users);
+		printf("%d" , total_allowed_users);
 	}
 	else printf("\nClient rejected : \n");
         }
