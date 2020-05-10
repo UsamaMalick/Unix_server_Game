@@ -60,7 +60,7 @@ void admin_setup(){
                 if(pow >= 1 || pow <= 5){
                     if(board_array[row-1][col-1] == 0){
                         flag = 1;
-                        board_array[row-1][col-1] = 2;
+                        board_array[row-1][col-1] = pow;
                         printBoard();
                     }
                     else{
