@@ -9,6 +9,84 @@
 
 
 
+int total_allowed_users;
+int num_of_users=3;
+char **name_of_users;
+int *user_scores;
+int board_array[5][5];
+
+
+void clear_screen(){
+    system("clear");
+}
+
+void printScoreBoard(){
+
+
+
+    printf("===============\n|  ");
+    printf("Score Board: \n");
+    for(int i = 0; i < num_of_users; ++i)
+    {
+	printf("|  ");
+	printf("%s",name_of_users[i]);
+	printf(": ");
+        printf("%d\t", user_scores[i]);
+	printf("\n");
+    }
+    printf("===============\n");
+
+  
+}
+
+
+void printBoard(){
+
+	printf("--------------------------------------------------------------------------------\n");
+	printf("\n");
+	for(int i=0;i<5;i++){
+		printf("|\t");
+		for(int j=0;j<5;j++){
+			printf("%d\t", board_array[i][j]);
+			printf("|\t");
+		}
+		printf("\n");
+		printf("\n");
+	}
+	printf("--------------------------------------------------------------------------------\n");
+}
+
+void freeResources(){
+	//////////////////////////
+	for ( int i = 0; i < total_allowed_users; i++ )
+	{
+	    free(name_of_users[i]);
+	}
+
+	free(name_of_users);
+	//////////////////////////
+	free(user_scores);
+}
+
+void initialize_Variables(){
+
+	name_of_users = (char*) calloc(total_allowed_users, sizeof(char));
+
+	for ( int i = 0; i < total_allowed_users; i++ )
+	{
+	    name_of_users[i] = (char*) calloc(100, sizeof(char)); // 100 represents the size
+	}
+	////////////////////////////
+	user_scores = (int*) malloc(num_of_users * sizeof(int));
+	 
+	// if memory cannot be allocated
+	if(user_scores == NULL)                     
+	{
+		printf("Error! memory not allocated.");
+		exit(0);
+	}
+}
+
 bool allow(char * username){
     
     char allow[1];
@@ -77,6 +155,15 @@ bool isUser(char * UserIncoming){
 int main(void)
 {
  
+        printf("Please allow total users you would like to allow :  ");
+        scanf("%d", &total_allowed_users); 
+        
+        printf("Waiting for : ");
+        printf("%d" , total_allowed_users);
+        printf(" users to enter into the game to start. \n");
+        
+        
+  
         int socket_desc, client_sock, client_size; 
         struct sockaddr_in server_addr, client_addr;         
 	//SERVER ADDR will have all the server address
@@ -183,28 +270,4 @@ int main(void)
 	else printf("\nClient rejected : \n");
         }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         
