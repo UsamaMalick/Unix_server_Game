@@ -12,6 +12,7 @@ int main(void)
         int socket_desc;
         struct sockaddr_in server_addr;
         char server_message[2000], client_message[2000];
+        char username[100], password[100];
         
         //Cleaning the Buffers
         
@@ -48,14 +49,28 @@ int main(void)
         printf("Connected\n");
         
         //Get Input from the User
+        printf("Give User Name : \n");
+        gets(username);
+        printf("Give Password  : \n");
+        gets(password);
+        
+        int l = 0;
+        for(int i=0; i<strlen(username); i++){
+        	client_message[l++] = username[i];
+        
+        }
 
-
-	printf("Loading Data: \n");
-        gets(client_message);    
-	//readFile(client_message);
-
-	printf ("%s" , client_message);
-	//strcpy (client_message , readFile());                               
+        client_message[l++] = '@';
+        for(int i = 0; i<strlen(password); i++) {
+        	client_message[l++] = password[i];
+        }
+        client_message[l++] = '\n';
+        //gets(client_message);   
+         
+        //readFile(client_message);
+        
+        
+        //strcpy (client_message , readFile());                               
         //Send the message to Server
         
         if(send(socket_desc, client_message, strlen(client_message),0) < 0)
@@ -67,8 +82,7 @@ int main(void)
         memset(server_message,'\0',sizeof(server_message));
         memset(client_message,'\0',sizeof(client_message));   
 	//Closing the Socket
-        
-        //close(socket_desc);
+  
         
         return 0;
 }

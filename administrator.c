@@ -8,8 +8,66 @@
 #include <arpa/inet.h> //inet_addr
 
 
+
+bool isUser(char * UserIncoming){
+
+    FILE *fp;
+    int MAXCHAR = 100;
+    char str[MAXCHAR];
+    char* filename = "users.txt";
+ 
+    fp = fopen(filename, "r");
+    if (fp == NULL){
+        printf("Could not open file %s",filename);
+        return 1;
+    }
+    bool is_user = false;
+    while (fgets(str, MAXCHAR, fp) != NULL) {
+        
+        int string_size = strlen(str);
+        int user_size = strlen(UserIncoming);
+        
+        printf("String Lengths : ");
+        printf("%d" , string_size);
+        printf("%d\n" , user_size);
+        printf("Strings : " );
+        printf("%s", str);    
+        printf(" : " );
+        printf("%s\n", UserIncoming);
+        
+        if(string_size == user_size) {
+        	printf("\nSize equal checking values. \n");
+        	is_user = false;       	
+        	for(int i=0; i<user_size; i++){
+        	     printf("%c", UserIncoming[i]);
+        	     printf("%c", str[i]);
+        	     if(UserIncoming[i] == str[i]) {
+        	     	is_user = true;
+        	     }
+        	     else {
+        	     	is_user = false;
+        	     	break;
+        	     }
+        	
+        	}
+        	if(is_user == true){
+        	     printf("IN TRUE");
+        	     printf("%s", str);
+        	     printf("%s\n", UserIncoming);
+        	     fclose(fp);
+        	     return is_user;	
+        	}
+        }
+    }
+    
+    fclose(fp);
+    return is_user;
+}
+    
+
 int main(void)
 {
+ 
         int socket_desc, client_sock, client_size; 
         struct sockaddr_in server_addr, client_addr;         
 	//SERVER ADDR will have all the server address
@@ -80,6 +138,7 @@ int main(void)
 	while(1){	
 	
 	    printf("Listening for Incoming Connections.....\n");
+	    memset(client_message,'\0',sizeof(client_message));     
 		
 	    client_sock = accept(socket_desc, 
 	    (struct sockaddr*)&client_addr, &client_size);
@@ -101,22 +160,11 @@ int main(void)
 		        return -1;
 		}
 		
-		printf("Client Message: %s\n",client_message);
-		char number_array [100] = {};
-		
-		int size = sizeof(client_message);
-		int k = 0;
-		for (int i=0; i<size; i++)
-		{	
-			
-			//printf("%s" , client_message[i]);
-			if(client_message[i] >= '0' 
-			&& client_message[i] <= '9')
-			{
-				number_array[k] = client_message[i]- 48;
-				k++;
-			}
+		//printf("Client Message: %s\n",client_message);
+		if ( isUser(client_message) == true) {
+			printf("Client Validated : \n");
 		}
+		else printf("\nClient rejected : \n");
 	}
 
 }
