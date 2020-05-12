@@ -9,17 +9,132 @@
 
 
 
+int total_allowed_users;
+int num_of_users;
+char **name_of_users;
+int *user_scores;
+int board_array[5][5];
+
+
+    
+void SavingUser(char * username) {
+
+    for (int i=0; i<strlen(username); i++) {
+    	name_of_users[num_of_users][i] = username[i];   
+    }
+    num_of_users++ ;
+
+}
+
+
+void clear_screen(){
+    system("clear");
+}
+
+void updateScore(int user_index,int score){
+	user_scores[user_index]=user_scores[user_index]+score;
+}
+
+int attack(int row, int column,int user_index){
+// return 0 means "miss" | return 1 means "hit" | return 2 means "sunk"
+
+	if(board_array[row-1][column-1]!=0){
+		board_array[row-1][column-1]=board_array[row-1][column-1]-1;
+		updateScore(user_index,10);
+		if(board_array[row-1][column-1]==0){
+			return 2;
+		}
+		return 1;
+	}
+	else{
+	return 0; 
+	}
+}
+
+void printScoreBoard(){
+
+
+
+    printf("===============\n|  ");
+    printf("Score Board: \n");
+    for(int i = 0; i < num_of_users; ++i)
+    {
+	printf("|  ");
+	printf("%s",name_of_users[i]);
+	printf(": ");
+        printf("%d\t", user_scores[i]);
+	printf("\n");
+    }
+    printf("===============\n");
+
+  
+}
+
+
+void printBoard(){
+
+	printf("--------------------------------------------------------------------------------\n");
+	printf("\n");
+	for(int i=0;i<5;i++){
+		printf("|\t");
+		for(int j=0;j<5;j++){
+			printf("%d\t", board_array[i][j]);
+			printf("|\t");
+		}
+		printf("\n");
+		printf("\n");
+	}
+	printf("--------------------------------------------------------------------------------\n");
+}
+
+void freeResources(){
+	//////////////////////////
+	for ( int i = 0; i < total_allowed_users; i++ )
+	{
+	    free(name_of_users[i]);
+	}
+
+	free(name_of_users);
+	//////////////////////////
+	free(user_scores);
+}
+
+void initialize_Variables(){
+
+	num_of_users = 0;
+
+	name_of_users = (char*) calloc(total_allowed_users, sizeof(char));
+
+	for ( int i = 0; i < total_allowed_users; i++ )
+	{
+	    name_of_users[i] = (char*) calloc(100, sizeof(char)); // 100 represents the size
+	}
+	////////////////////////////
+	user_scores = (int*) malloc(num_of_users * sizeof(int));
+	 
+	// if memory cannot be allocated
+	if(user_scores == NULL)                     
+	{
+		printf("Error! memory not allocated.");
+		exit(0);
+	}
+}
+
 bool allow(char * username){
     
-    char allow[1];
+    char allowUser;
     
     printf("\nDo you want to allow user to enter in the game room. \n");
     printf("User name is : ");
     printf("%s\n" , username);
     printf("Please Select an option [y/n] : ");
-    gets(allow);
     
-    if (allow[0] == 'y') {
+    scanf(" %c" , &allowUser);
+    
+    
+    printf("%c" , allowUser);
+    
+    if (allowUser == 'y') {
     	printf("User allowed to enter the Game Room. \n");
     	return true;
     }
@@ -75,8 +190,18 @@ bool isUser(char * UserIncoming){
     
 
 int main(void)
-{
- 
+{ 
+
+        
+        printf("Please allow total users you would like to allow :  ");
+        scanf("%d", &total_allowed_users); 
+        
+        printf("Waiting for : ");
+        printf("%d" , total_allowed_users);
+        printf(" users to enter into the game to start. \n");
+        
+        
+        initialize_Variables();
         int socket_desc, client_sock, client_size; 
         struct sockaddr_in server_addr, client_addr;         
 	//SERVER ADDR will have all the server address
@@ -91,6 +216,8 @@ int main(void)
         memset(client_message,'\0',sizeof(client_message));     
 	// Set all bits of the padding field//        
         //Creating Socket
+        
+        
         
         socket_desc = socket(AF_INET, SOCK_STREAM, 0);
 	
@@ -178,33 +305,21 @@ int main(void)
 			username[i] = client_message[i];	
 		}
 		printf("Player Validated : \n");
-		allow(username);
+		
+		if(total_allowed_users > num_of_users) {
+			if (allow(username) == true){
+				SavingUser(username);
+				printf("Player Inserted : \n");	
+			}
+		}
+		else printf("Number of players in the room are at max.\n");
+		printf("%d" , num_of_users);
+		printf("%d" , total_allowed_users);
 	}
 	else printf("\nClient rejected : \n");
         }
+        
+        freeResources();
+        return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         
