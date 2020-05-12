@@ -1,7 +1,11 @@
 #include <stdio.h>
 
+int num_of_ships = 0, row, col;
+int total_allowed_users;
+int num_of_users;
+char **name_of_users;
+int *user_scores;
 int board_array[5][5];
-int num_of_ships = 0, total_allowed_users = 0, row, col;
 
 void printBoard(){
 	printf("--------------------------------------------------------------------------------\n");
@@ -132,6 +136,38 @@ void coodinates(char buf[], int *row, int *col)
 	*col = (int)buf[1] - 48;
 }
 
+char* Checkwin()
+{
+	int i, max = user_scores[0], count = 0;
+
+	for(i=1; i<total_allowed_users; i++)
+	{
+		if(max < user_scores[i])
+		{
+			max = user_scores[i];
+			count = 0;
+		}
+		else if(max == user_scores[i])
+		{
+			count++;
+		}
+	}
+
+	char temp[1];
+	temp[0] = '\0';
+	char* name = temp;
+
+	if(count == 0)
+	{
+		strcpy(name, name_of_users[i-1]);
+		strcat(name, " Wins !!");
+	}
+	else
+	{
+		strcpy(name, "Tie !!!");
+	}
+	return name;
+}
 
 int main() {
    // printf() displays the string inside quotation
