@@ -1,7 +1,11 @@
 #include <stdio.h>
 
+int num_of_ships = 0, row, col;
+int total_allowed_users;
+int num_of_users;
+char **name_of_users;
+int *user_scores;
 int board_array[5][5];
-int num_of_ships = 0, total_allowed_users = 0, row, col;
 
 void printBoard(){
 	printf("--------------------------------------------------------------------------------\n");
@@ -33,7 +37,7 @@ void admin_setup(){
         printf("Kindly enter number of ships(In range 1-10):");
         scanf("%d", &num_of_ships);
 
-        if(! (num_of_ships >= 1 || num_of_ships <= 10) ){
+        if(! (num_of_ships >= 1 && num_of_ships <= 10) ){
             printf("Wrong number of ships entered.\n");
         }
         else{
@@ -53,11 +57,11 @@ void admin_setup(){
             printf("Column:");
             scanf("%d", &col);
 
-            if( (row >= 1 || row <= 5) && (col >= 1 || col <= 5) ){
+            if( (row >= 1 && row <= 5) && (col >= 1 && col <= 5) ){
                 printf("Power:");
                 scanf("%d", &pow);
 
-                if(pow >= 1 || pow <= 5){
+                if(pow >= 1 && pow <= 5){
                     if(board_array[row-1][col-1] == 0){
                         flag = 1;
                         board_array[row-1][col-1] = pow;
@@ -81,23 +85,99 @@ void admin_setup(){
     flag = 0;
     while(flag == 0)
     {
-        printf("Kindly enter number of users(In range 1-3):");
+        printf("Kindly enter number of users:");
 	    scanf("%d", &total_allowed_users);
 
-        if(! (total_allowed_users >= 1 || total_allowed_users <= 3)){
+        if(! (total_allowed_users >= 1)){
             printf("Wrong number of user entered.\n");
         }
         else{
             flag = 1;
         }
     }
-	
-	printBoard();
+   printf("Your Game board is Ready.\n");
+   printBoard();
 }
 
+char* client()
+{
+    static char arr[3];
+    int row, col;
+    int flag = 0;
+    while(flag == 0)
+    {
+        printf("Enter coordinates(In range 1-5) to Attack.\n");
+
+        printf("Row:");
+        scanf("%d", &row);
+
+        printf("Column:");
+        scanf("%d", &col);
+
+        if( (row >= 1 && row <= 5) && (col >= 1 && col <= 5) )
+        {
+            arr[0] = row + 48; 
+            arr[1] = col + 48;
+            arr[2] = '\0';
+            flag = 1;
+        }
+        else 
+        {
+            printf("The coordinates are out of range.\n");
+        }
+    }
+    //printf("%s", arr);
+    return arr;
+}
+
+void coodinates(char buf[], int *row, int *col)
+{
+	*row = (int)buf[0] - 48;
+	*col = (int)buf[1] - 48;
+}
+
+char* Checkwin()
+{
+	int i, max = user_scores[0], count = 0;
+
+	for(i=1; i<total_allowed_users; i++)
+	{
+		if(max < user_scores[i])
+		{
+			max = user_scores[i];
+			count = 0;
+		}
+		else if(max == user_scores[i])
+		{
+			count++;
+		}
+	}
+
+	char temp[1];
+	temp[0] = '\0';
+	char* name = temp;
+
+	if(count == 0)
+	{
+		strcpy(name, name_of_users[i-1]);
+		strcat(name, " Wins !!");
+	}
+	else
+	{
+		strcpy(name, "Tie !!!");
+	}
+	return name;
+}
 
 int main() {
    // printf() displays the string inside quotation
-   printf("Hello, World!");
+   int row, col;
+   char buf[50];
+   char* arr = client();
+   strcpy(buf, arr);
+   printf("%s\n", buf);
+	coodinates(buf, &row, &col);
+	printf("row: %d", row);
+	printf("col: %d", col);
    return 0;
 }
