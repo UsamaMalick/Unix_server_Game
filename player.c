@@ -82,6 +82,56 @@ int main(void)
         memset(server_message,'\0',sizeof(server_message));
         memset(client_message,'\0',sizeof(client_message));   
 	//Closing the Socket
+	
+	
+	
+        if(recv(socket_desc, server_message, sizeof(server_message),0) < 0)
+        {
+                printf("Receive Failed. Error!!!!!\n");
+                return -1;
+        }
+        
+        printf("Server Message: \n%s\n",server_message);
+        
+        bool enter_room = false;
+        
+        if(server_message[0] == '1'){       
+        	enter_room = true;
+        	printf("Welcome to the GameZone\n");
+        }
+        else printf("You are not allowed to enter the GameZone.\n");
+        
+        
+        
+        
+        while(enter_room == true) {
+        
+        	printf("Into the Game!.\n");
+        	
+        	if(recv(socket_desc, server_message, sizeof(server_message),0) < 0)
+        	{
+               	printf("Receive Failed. Error!!!!!\n");
+                	return -1;
+        	}
+        
+        	printf("Server Message: \n%s\n",server_message);
+        
+        
+        
+        ///PLayer Turn Logic will come here.
+       
+	    char allowUser;		    		   		  
+	    scanf(" %c" , &allowUser);		    		    		 
+	    		    	    
+	    if (allowUser == 'y') {
+	    	enter_room == false;
+	    }
+		    
+		        
+        	//enter_room == false;
+        }
+	
+        printf("Have a Good Day.Bye!  -_-\n");
   
         
         return 0;
