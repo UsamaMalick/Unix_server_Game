@@ -1,14 +1,14 @@
 
-#include <stdio.h> 
-#include <string.h> 
-# include <stdlib.h>
-# include <stdbool.h>
-#include <ctype.h>
-#include <sys/socket.h> //socket
-#include <arpa/inet.h> //inet_addr
+
+#include "protoclient.h"
+
+int shmid;
+struct shmseg *shmp;
+
 
 int main(void)
 {
+        initialize_variables();
         int socket_desc;
         struct sockaddr_in server_addr;
         char server_message[2000], client_message[2000];
@@ -18,6 +18,8 @@ int main(void)
         
         memset(server_message,'\0',sizeof(server_message));
         memset(client_message,'\0',sizeof(client_message));
+        
+        clear_screen();
         
         //Creating Socket
         
@@ -91,7 +93,10 @@ int main(void)
                 return -1;
         }
         
-        printf("Server Message: \n%s\n",server_message);
+        printf("\n%s\n",server_message);
+        
+        
+        clear_screen();
         
         bool enter_room = false;
         
@@ -108,34 +113,64 @@ int main(void)
         
         	printf("Into the Game!.\n");
         	
-        	if(recv(socket_desc, server_message, sizeof(server_message),0) < 0)
-        	{
-               	printf("Receive Failed. Error!!!!!\n");
-                	return -1;
-        	}
-        
-        	printf("Server Message: \n%s\n",server_message);
-        
-        
-        
-        ///PLayer Turn Logic will come here.
-       
-	    char allowUser;		    		   		  
-	    scanf(" %c" , &allowUser);		    		    		 
-	    		    	    
-	    if (allowUser == 'y') {
-	    	enter_room == false;
-	    }
-		    
-		        
-        	//enter_room == false;
-        }
+   
+        	memset(client_message,'\0',sizeof(client_message));         	
+         	memset(server_message,'\0',sizeof(server_message)); 
+         	
+         	
+         	if(recv(socket_desc, server_message, sizeof(server_message),0) < 0)
+	{
+	 	printf("Receive Failed. Error!!!!!\n");
+	  	return -1;
+	}
 	
+	
+	printf("\n%s\n",server_message);
+	
+	
+	if (strcmp(server_message ,  "Get Ready for you Turn. The game has started!") != 0){
+        		retrieveDataFromSharedMemory(); 		
+        	
+        	}
+        	
+        	memset(server_message,'\0',sizeof(server_message)); 
+ 
+	if(recv(socket_desc, server_message, sizeof(server_message),0) < 0)
+	{
+	 	printf("Receive Failed. Error!!!!!\n");
+	  	return -1;
+	}
+
+	printf("Server Message: \n%s\n",server_message);
+
+        	
+        	if (strcmp(server_message , "Take Your Turn!") != 0){
+        		retrieveDataFromSharedMemory();
+        		enter_room = false;
+        		break;    		
+        		
+        	}
+        	retrieveDataFromSharedMemory();
+        	
+  
+        	
+        	
+        	printf("Sending to Server .\n");
+        	strcpy(client_message, client());
+        	
+        	if(send(socket_desc, client_message, strlen(client_message),0) < 0)
+	{
+		printf("Send Failed. Error!!!!\n");
+		return -1;
+	}  
+		        
+        }
+        
+        
+      
         printf("Have a Good Day.Bye!  -_-\n");
   
-        
+        freeResources();        
         return 0;
 }
-
-
 
