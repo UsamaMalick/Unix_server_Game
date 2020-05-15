@@ -14,6 +14,7 @@ int *user_scores;
 int board_array[5][5];
 int num_of_ships , row, col;
 int *cient_sock_arr;
+int **ship_coordinates;
 
 
 
@@ -122,42 +123,114 @@ void admin_setup(){
         }
         else{
             flag = 1;
+
+		//row, col, position, pow
+		ship_coordinates = (int*) calloc(num_of_ships, sizeof(int));
+		for ( int i = 0; i < num_of_ships; i++ )
+		{
+		    ship_coordinates[i] = (int*) calloc(4, sizeof(int)); // 100 represents the size
+		}
         }
     }
 
+	//2 means Ship exist, 1 means ship hit, 0 means water 
+	char position;
 	for(int i=0; i<num_of_ships; i++){
         flag = 0;
         while(flag == 0)
         {
-            printf("Enter ship %d coordinates(In range 1-5).\n", i+1);
+			printf("Enter ship position(V for vertical/H for horizontal):");
+			scanf(" %c", &position);
 
-            printf("Row:");
-            scanf("%d", &row);
+			if(position == 'V'|| position == 'H')
+			{
+				printf("\n\nEnter ship %d start coordinates(In range 1-5).\n", i+1);
 
-            printf("Column:");
-            scanf("%d", &col);
+		        printf("Row:");
+		        scanf("%d", &row);
 
-            if( (row >= 1 && row <= 5) && (col >= 1 && col <= 5) ){
-                printf("Power (In range 1-5) : ");
-                scanf("%d", &pow);
+		        printf("Column:");
+		        scanf("%d", &col);
 
-                if(pow >= 1 && pow <= 5){
-                    if(board_array[row-1][col-1] == 0){
-                        flag = 1;
-                        board_array[row-1][col-1] = pow;
-                        printBoard();
-                    }
-                    else{
-                        printf("There is already a ship.");
-                    }
-                }
-                else{
-                    printf("Power Should be in range of 1-5.");
-                }   
-            }
-            else{
-                printf("Wrong coordinates entered. Kindly enter values in 1-5 range.\n");
-            }
+			int flag1 = 1; //For checking already placed ship
+		        if( (row >= 1 && row <= 5) && (col >= 1 && col <= 5) ){
+		            printf("Power (In range 1-5) : ");
+		            scanf("%d", &pow);
+
+		            if(pow >= 1 && pow <= 5){
+
+						int pos;
+						if(position == 'H' && pow+col-1<=5)
+						{
+							flag1 = 0;
+							pos = 1; //1 means ship is veritcal
+						}
+						else if(position == 'V' && pow+row-1<=5)
+						{
+							flag1 = 0; 
+							pos = 0; //0 means ship is horizontal
+						}
+					
+						if(flag1 == 0)
+						{
+							ship_coordinates[i][0] = row;
+							ship_coordinates[i][1] = col;
+							ship_coordinates[i][2] = pos;
+							ship_coordinates[i][3] = pow;
+							int flag2 = 1; 
+							for(int k=0; k<pow; k++)
+							{
+								if(position == 'V' && board_array[row-1+k][col-1] == 0){
+									flag2 = 0;
+								}
+								else if(position == 'H' && board_array[row-1][col-1+k] == 0){
+									flag2 = 0;
+								}
+								else{
+									flag2 = 1;
+									break;
+								}
+							}
+							
+							if(flag2 == 0)
+							{
+								for(int k=0; k<pow; k++)
+								{
+									if(position == 'V' && board_array[row-1+k][col-1] == 0){
+									    flag = 1;
+									    board_array[row-1+k][col-1] = 2;
+
+									}
+									else if(position == 'H' && board_array[row-1][col-1+k] == 0)
+									{
+									    flag = 1;
+									    board_array[row-1][col-1+k] = 2;
+									}
+								}
+								printBoard();
+							}
+							else
+							{
+								printf("There is already a ship.\n");
+							}
+			
+						}
+						else{
+							printf("The ship is out of board.\n");
+						}
+
+		            }
+		            else{
+		                printf("Power Should be in range of 1-5.\n");
+		            }   
+		        }
+		        else{
+		            printf("Wrong coordinates entered. Kindly enter values in 1-5 range.\n");
+		        }
+
+			}
+
+            
         }
         
 	}
