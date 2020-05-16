@@ -92,7 +92,7 @@ int isGameOver(){
 // return 0 means "game over" | return 1 means "game not over" 
 	for(int i=0;i<5;i++){
 		for(int j=0;j<5;j++){
-			if(board_array[i][j]!=0){
+			if(board_array[i][j] !=0 && board_array[i][j] != 8){
 				return 1;
 			}
 		}
@@ -122,118 +122,124 @@ void admin_setup(){
             printf("Wrong number of ships entered.\n");
         }
         else{
-            flag = 1;
+	flag = 1;
 
-		//row, col, position, pow
-		ship_coordinates = (int*) calloc(num_of_ships, sizeof(int));
-		for ( int i = 0; i < num_of_ships; i++ )
-		{
-		    ship_coordinates[i] = (int*) calloc(4, sizeof(int)); // 100 represents the size
-		}
+	//row, col, position, pow
+	ship_coordinates = (int*) calloc(num_of_ships, sizeof(int));
+	for ( int i = 0; i < num_of_ships; i++ )
+	{
+	    ship_coordinates[i] = (int*) calloc(4, sizeof(int)); // 100 represents the size
+	}
         }
     }
 
-	//2 means Ship exist, 1 means ship hit, 0 means water 
-	char position;
-	for(int i=0; i<num_of_ships; i++){
-        flag = 0;
-        while(flag == 0)
-        {
-			printf("Enter ship position(V for vertical/H for horizontal):");
-			scanf(" %c", &position);
+//2 means Ship exist, 1 means ship hit, 0 means water 
+    char position;
+    for(int i=0; i<num_of_ships; i++){
+	flag = 0;
+	while(flag == 0)
+	{
+	printf("Enter ship position(V for vertical/H for horizontal):");
+	scanf(" %c", &position);
 
-			if(position == 'V'|| position == 'H')
-			{
-				printf("\n\nEnter ship %d start coordinates(In range 1-5).\n", i+1);
+	if(position == 'V'|| position == 'H')
+	{
+		printf("\n\nEnter ship %d start coordinates(In range 1-5).\n", i+1);
 
-		        printf("Row:");
-		        scanf("%d", &row);
+		printf("Row:");
+		scanf("%d", &row);
 
-		        printf("Column:");
-		        scanf("%d", &col);
+		printf("Column:");
+		scanf("%d", &col);
 
-			int flag1 = 1; //For checking already placed ship
-		        if( (row >= 1 && row <= 5) && (col >= 1 && col <= 5) ){
-		            printf("Power (In range 1-5) : ");
-		            scanf("%d", &pow);
+		int flag1 = 1; //For checking already placed ship
+		if( (row >= 1 && row <= 5) && (col >= 1 && col <= 5) ){
+			printf("Power (In range 1-5) : ");
+			scanf("%d", &pow);
 
-		            if(pow >= 1 && pow <= 5){
+			if(pow >= 1 && pow <= 5){
 
-						int pos;
-						if(position == 'H' && pow+col-1<=5)
-						{
-							flag1 = 0;
-							pos = 1; //1 means ship is veritcal
-						}
-						else if(position == 'V' && pow+row-1<=5)
-						{
-							flag1 = 0; 
-							pos = 0; //0 means ship is horizontal
-						}
+				int pos;
+				if(position == 'H' && pow+col-1<=5)
+				{
+					flag1 = 0;
+					pos = 0; //0 means ship is horizontal
 					
-						if(flag1 == 0)
+				}
+				else if(position == 'V' && pow+row-1<=5)
+				{
+					flag1 = 0; 
+					pos = 1; //1 means ship is vertical
+					
+				}
+				
+				if(flag1 == 0)
+				{
+					ship_coordinates[i][0] = row;
+					ship_coordinates[i][1] = col;
+					ship_coordinates[i][2] = pos;
+					ship_coordinates[i][3] = pow;
+					int flag2 = 1; 
+					for(int k=0; k<pow; k++)
+					{
+						if(position == 'V' && board_array[row-1+k][col-1] == 0){
+							flag2 = 0;
+						}
+						else if(position == 'H' && board_array[row-1][col-1+k] == 0){
+							flag2 = 0;
+						}
+						else {				
+							flag2 = 1;
+							break;
+						}
+					}
+					
+					if(flag2 == 0)
+					{
+						for(int k=0; k<pow; k++)
 						{
-							ship_coordinates[i][0] = row;
-							ship_coordinates[i][1] = col;
-							ship_coordinates[i][2] = pos;
-							ship_coordinates[i][3] = pow;
-							int flag2 = 1; 
-							for(int k=0; k<pow; k++)
+							if(position == 'V' && board_array[row-1+k][col-1] == 0)
 							{
-								if(position == 'V' && board_array[row-1+k][col-1] == 0){
-									flag2 = 0;
-								}
-								else if(position == 'H' && board_array[row-1][col-1+k] == 0){
-									flag2 = 0;
-								}
-								else{
-									flag2 = 1;
-									break;
-								}
-							}
-							
-							if(flag2 == 0)
-							{
-								for(int k=0; k<pow; k++)
-								{
-									if(position == 'V' && board_array[row-1+k][col-1] == 0){
-									    flag = 1;
-									    board_array[row-1+k][col-1] = 2;
+						    		flag = 1;
+						    		board_array[row-1+k][col-1] = 2;
 
-									}
-									else if(position == 'H' && board_array[row-1][col-1+k] == 0)
-									{
-									    flag = 1;
-									    board_array[row-1][col-1+k] = 2;
-									}
-								}
-								printBoard();
 							}
-							else
-							{
-								printf("There is already a ship.\n");
+							else if(position == 'H' 
+							&& board_array[row-1][col-1+k] == 0) 								{
+								    flag = 1;
+								    board_array[row-1][col-1+k] = 2;
 							}
-			
 						}
-						else{
-							printf("The ship is out of board.\n");
-						}
+						printBoard();
+					}
+					else
+					{						
+						printf("There is already a ship.\n");
+					}
 
-		            }
-		            else{
-		                printf("Power Should be in range of 1-5.\n");
-		            }   
-		        }
-		        else{
-		            printf("Wrong coordinates entered. Kindly enter values in 1-5 range.\n");
-		        }
+				}
+				else
+				{
+					printf("The ship is out of board.\n");
+				}
 
+		
 			}
+			else
+			{
+				printf("Power Should be in range of 1-5.\n");
+			}   
+		}
+		else{
+			printf("Wrong coordinates entered. Kindly enter values in 1-5 range.\n");
+		}
 
-            
-        }
-        
 	}
+
+
+	}
+        
+    }
 
     flag = 0;
     while(flag == 0)
@@ -248,8 +254,8 @@ void admin_setup(){
             flag = 1;
         }
     }
-   printf("Your Game board is Ready.\n");
-   printBoard();
+    printf("Your Game board is Ready.\n");
+    printBoard();
 }
 
     
@@ -270,22 +276,108 @@ void updateScore(int user_index,int score){
 	user_scores[user_index]=user_scores[user_index]+score;
 }
 
+
 int attack(int row, int column,int user_index){
 // return 0 means "miss" | return 1 means "hit" | return 2 means "sunk"
-
-	if(board_array[row-1][column-1]!=0){
-		board_array[row-1][column-1]=board_array[row-1][column-1]-1;
-		updateScore(user_index,10);
-		if(board_array[row-1][column-1]==0){
-			return 2;
+	int _row,_col,_pos,_pow,_index=-1;
+	if(board_array[row-1][column-1]!=0 && board_array[row-1][column-1]!=1 ){
+	
+		if(board_array[row-1][column-1]==2){
+		
+			board_array[row-1][column-1]=board_array[row-1][column-1]-1;
+			updateScore(user_index,10);
+				
+			for(int i=0;i<num_of_ships;i++)
+			{ //which ship 
+					
+				if(ship_coordinates[i][2]==0){ // horizontal
+					for(int j=0;j<ship_coordinates[i][3];j++)
+					{
+						if(ship_coordinates[i][0]==row && ship_coordinates[i][1]+j==column)
+						{
+							_index=i;
+							i=num_of_ships+1;
+							break;
+						}
+					}
+				}
+				else if(ship_coordinates[i][2]==1)
+				{ // vertical
+					for(int j=0;j<ship_coordinates[i][3];j++)
+					{
+						if(ship_coordinates[i][0]+j==row && ship_coordinates[i][1]==column)
+						{
+							_index=i;
+							i=num_of_ships+1;
+							break;
+						}
+					}
+						
+				}
+					
+			}
+			int _myflag=1;
+				
+			_row=ship_coordinates[_index][0]-1;
+			_col=ship_coordinates[_index][1]-1;
+			_pos=ship_coordinates[_index][2];
+			if(_pos==0)//horizontal
+			{
+				for(int j=0;j<ship_coordinates[_index][3];j++)
+				{
+					if(board_array[_row][_col+j]==2 )
+					{
+						_myflag=0;//  do not sunk
+              					
+					}
+				}
+			}
+			else if(_pos==1)
+			{
+				for(int j=0;j<ship_coordinates[_index][3];j++){
+					if(board_array[_row+j][_col]==2 ){
+						_myflag=0;//  do not sunk
+              					
+					}
+				}
+			}
+        			else{
+        				printf("\n Nor horizontal Nor verticle");
+        			}
+				
+			if(_myflag==1){
+        				
+				if(_pos==0)//horizontal
+				{
+					for(int j=0;j<ship_coordinates[_index][3];j++){
+						board_array[_row][_col+j]=8;
+					}
+            					return 2;
+				}
+				else if(_pos==1)
+				{
+					for(int j=0;j<ship_coordinates[_index][3];j++){
+						board_array[_row+j][_col]=8;
+					}
+            					return 2;
+				}
+          				else{
+			          		printf("\nElse Part");
+			          	}
+					
+					
+			}
+			else{
+				return 1;
+			}
+				
 		}
-		return 1;
 	}
-	else{
-	return 0; 
+	else
+	{
+		return 0; 
 	}
 }
-
 
 int fill_buffer(char * bufptr, int size) {
    
@@ -306,7 +398,22 @@ void printBoard(){
 	for(int i=0;i<5;i++){
 		printf("|\t");
 		for(int j=0;j<5;j++){
-			printf("%d\t", board_array[i][j]);
+			if (board_array[i][j] == 8){
+			
+				printf("%s\t", "S");
+			}
+			else if (board_array[i][j] == 1){
+			
+				printf("%s\t", "H");
+			}
+			else if (board_array[i][j] == 2){
+			
+				printf("%s\t", "$");
+			}
+			else{
+			
+				printf("%d\t", board_array[i][j]);
+			}
 			printf("|\t");
 		}
 		printf("\n");

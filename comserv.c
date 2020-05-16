@@ -41,8 +41,7 @@ int *cient_sock_arr;
 int main(void)
 { 
 
-
-	clear_screen();
+        clear_screen();
 
         char * winner_name;
         admin_setup();
@@ -258,10 +257,11 @@ int main(void)
 		int row, col;
 		coodinates(client_message, &row, &col);
 		
-		printf ("\n%d" , row);
-		printf ("\n%d" , col);
+
 		
 		int attack_result = attack(row, col, i);
+		
+
 		
 		clear_screen();
 		
